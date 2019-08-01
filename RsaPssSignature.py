@@ -10,6 +10,7 @@ class RsaPssSignature:
 
   # Set the message for signing
   def SetMessage(self, message):
+    # message cannot be empty
     if message == "" or not message:
       return False
     else:
@@ -39,6 +40,7 @@ class RsaPssSignature:
     if not hashedMessage:
       hashedMessage = self.hashedMessage
 
+    # to remember the signed message
     self.signedMessage = self.GetMessage()
 
     signer = pss.new(key)

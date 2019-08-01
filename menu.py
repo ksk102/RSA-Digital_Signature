@@ -6,6 +6,7 @@ def Menu():
 
   method = RsaPssSignature()
 
+  # Menu for user to choose
   print("(1) Automatically generate the signing and verifying process.")
   print("(2) Manually handle the signing and verifying process.")
   print("(9) Exit from the system")
@@ -147,4 +148,5 @@ def main():
   # Shows the Main Menu
   Menu()
 
-main()
+if __name__ == '__main__':
+  main()
