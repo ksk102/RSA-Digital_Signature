@@ -2,6 +2,7 @@ from Crypto.PublicKey import RSA
 from Crypto.Signature import pss
 from Crypto.Hash import SHA256
 from Crypto import Random
+from base64 import b64encode, b64decode
 
 class RsaPssSignature:
   # Set the hashing algorithm
@@ -65,16 +66,18 @@ class RsaPssSignature:
 
   # Get the private key
   def GetPrivateKey(self):
-      return self.private
+    return str(self.private.exportKey("PEM"))
+    # return str(self.private)
   
   # Get the public key
   def GetPublicKey(self):
-    return self.public
+    return str(self.public.exportKey("PEM"))
+    # return (self.public)
 
   # Get the hashed message
   def GetHashedMessage(self):
-    return self.hashedMessage
+    return self.hashedMessage.hexdigest()
 
   # Get the signature of the message
-  def getSignature(self):
-    return self.signature
+  def GetSignature(self):
+    return str(b64encode(self.signature))
