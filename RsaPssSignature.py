@@ -39,6 +39,8 @@ class RsaPssSignature:
     if not hashedMessage:
       hashedMessage = self.hashedMessage
 
+    self.signedMessage = self.GetMessage()
+
     signer = pss.new(key)
     self.signature = signer.sign(hashedMessage)
 
@@ -63,6 +65,10 @@ class RsaPssSignature:
   # Get the plaintext message
   def GetMessage(self):
     return self.message
+  
+  # Get the message that get signed
+  def GetSignedMessage(self):
+    return self.signedMessage
 
   # Get the private key
   def GetPrivateKey(self):
