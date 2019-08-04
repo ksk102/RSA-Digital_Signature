@@ -256,31 +256,47 @@ class GuiDigitalSignature(QtWidgets.QWidget):
 
 
   def SetPkiLayout(self):
+    # main layout for PKI part
     layout = QtWidgets.QVBoxLayout()
+    # set title for the PKI part
     titleLabel = QtWidgets.QLabel("PKI")
     layout.addWidget(titleLabel)
 
+    # make scrollable layout wrapper
     scrollLayout = QtWidgets.QVBoxLayout()
 
+    # items for pki
     emailEdit = []
     keyEdit = []
+    # layout for each item pair
     itemLayout = []    
 
     for x in range(10):
+      # add email and key edit fields
       emailEdit.insert(x, QtWidgets.QLineEdit())
+      emailEdit[x].setReadOnly(True)
       keyEdit.insert(x, QtWidgets.QLineEdit())
+      keyEdit[x].setReadOnly(True)
+      keyEdit[x].setMinimumWidth(500)
+      # add each email and key edit field into respective wrapper layout
       itemLayout.insert(x, QtWidgets.QHBoxLayout()) 
       itemLayout[x].addWidget(emailEdit[x])
       itemLayout[x].addWidget(keyEdit[x])
 
+      # add each item layout into scrollable wrapper layout
       scrollLayout.addLayout(itemLayout[x])
 
+    # convert scrollable wrapper layout to a widget, as QScrollArea accept only widget
     widget = QtWidgets.QWidget()
+    widget.setMinimumWidth(700)
     widget.setLayout(scrollLayout)
 
+    # add the widget above into the scrollable area
     scrollArea = QtWidgets.QScrollArea()
     scrollArea.setWidget(widget)
+    scrollArea.setAlignment(QtCore.Qt.AlignHCenter)
 
+    # add the scrollable area into the outermost main layout for the PKI
     layout.addWidget(scrollArea)
 
     return layout
