@@ -101,8 +101,8 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     def ValidateMessage(sender):
       if self.windowClosing is True:
         return
-      
-      if sender.toPlainText() == "":
+
+      if sender.toPlainText().strip() == "":
         self.Alert("Message must not be empty")
         sender.setStyleSheet('background-color: #ffcdd2; ')
         sender.setFocus
