@@ -18,6 +18,10 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     # Set Window Title
     title = "Digital Signature Implementation Demostration - RSA (PSS)"
     self.setWindowTitle(title)
+    # Icons made by Icongeek26 "https://www.flaticon.com/authors/icongeek26"
+    # from "https://www.flaticon.com/" 
+    # is licensed by Creative Commons BY 3.0
+    self.setWindowIcon(QtGui.QIcon('images/icon.png'))
 
     # Set Window Size
     windowSize = QtCore.QSize(800, 600) 
