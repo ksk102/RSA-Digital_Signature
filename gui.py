@@ -6,8 +6,16 @@ from PySide2 import QtCore, QtWidgets, QtGui
 class GuiDigitalSignature(QtWidgets.QWidget):
   def __init__(self):
     super().__init__()
+
+    self.windowClosing = False
+
     self.InitGui()
 
+
+  def closeEvent(self, event):
+    self.windowClosing = True
+    return super().closeEvent(event)
+    
 
   def InitGui(self):
     self.InitTitleAndWindow() # Initialise Title and Window of the interface
