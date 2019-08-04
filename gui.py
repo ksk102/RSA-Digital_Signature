@@ -178,69 +178,78 @@ class GuiDigitalSignature(QtWidgets.QWidget):
 
 
   def SetReceiverLayout(self):
+    # main layout for receiver's content area
     layout = QtWidgets.QVBoxLayout()
-
+    # set title for the receiver's content area
     titleLabel = QtWidgets.QLabel("Receiver")
     layout.addWidget(titleLabel)
 
-    # Signed Document Field
+    # Signed Document edit Field
     signedEdit = QtWidgets.QTextEdit()
     signedEdit.setPlaceholderText("Retrieved Signed Document")
+    signedEdit.setToolTip("Retrieved Signed Document")
     layout.addWidget(signedEdit)
 
-    # Sender's Public Key Field
+    # Sender's Public Key label
     publicLabel = QtWidgets.QLabel("Sender's Public Key")
     layout.addWidget(publicLabel)
-
+    # Sender's public key edit field
     publicEdit = QtWidgets.QLineEdit()
+    publicEdit.setReadOnly(True)
     layout.addWidget(publicEdit)
 
-    # Message and Signature Field
+    # Message and Signature label
     messageLabel = QtWidgets.QLabel("Message")
     signatureLabel = QtWidgets.QLabel("Signature")
-
+    # Message and Signature edit field
     messageEdit = QtWidgets.QTextEdit()
+    messageEdit.setReadOnly(True)
     signatureEdit = QtWidgets.QTextEdit()
-
+    signatureEdit.setReadOnly(True)
+    # wrapper layout for message and signature
     messageSignatureLayout = QtWidgets.QHBoxLayout()
-
+    # message layout
     messageLayout = QtWidgets.QVBoxLayout()
     messageLayout.addWidget(messageLabel)
     messageLayout.addWidget(messageEdit)
-
+    # signature layout
     signatureLayout = QtWidgets.QVBoxLayout()
     signatureLayout.addWidget(signatureLabel)
     signatureLayout.addWidget(signatureEdit)
-
+    # bring both message and signature layout to the wrapper layout
     messageSignatureLayout.addLayout(messageLayout)
     messageSignatureLayout.addLayout(signatureLayout)
-
+    # bring the wrapper layout to main layout
     layout.addLayout(messageSignatureLayout)
 
-    # Generated Hash and Retrieved Hash Field
+    # Generated Hash and Retrieved Hash label
     generateLabel = QtWidgets.QLabel("Generated Hash")
     retrieveLabel = QtWidgets.QLabel("Retrieved Hash")
-
+    # Generated Hash and Retrieved Hash edit field
     generateEdit = QtWidgets.QTextEdit()
+    generateEdit.setReadOnly(True)
     retrieveEdit = QtWidgets.QTextEdit()
-
+    retrieveEdit.setReadOnly(True)
+    # wrapper layout for both hashes
     hashLayout = QtWidgets.QHBoxLayout()
-
+    # generated hash's layout
     generateLayout = QtWidgets.QVBoxLayout()
     generateLayout.addWidget(generateLabel)
     generateLayout.addWidget(generateEdit)
-
+    # retrieved hash's layout
     retrieveLayout = QtWidgets.QVBoxLayout()
     retrieveLayout.addWidget(retrieveLabel)
     retrieveLayout.addWidget(retrieveEdit)
-
+    # bring both hashes layout to wrapper layout
     hashLayout.addLayout(generateLayout)
     hashLayout.addLayout(retrieveLayout)
-
+    # bring wrapper layout to main layout
     layout.addLayout(hashLayout)
 
     # Verified Indicator
     verifiedIndicate = QtWidgets.QLineEdit()
+    verifiedIndicate.setReadOnly(True)
+    verifiedIndicate.setAlignment(QtCore.Qt.AlignHCenter)
     layout.addWidget(verifiedIndicate)
 
     return layout
