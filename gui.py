@@ -57,7 +57,7 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     # Beautifying the space between the upper and lower part (PKI)
     mainLayout.setRowMinimumHeight(1, 30)
     # Set the Height for PKI content area
-    mainLayout.setRowMinimumHeight(2, 200)
+    mainLayout.setRowMinimumHeight(2, 160)
 
     # Initialise the three main content areas
     senderLayout = self.SetSenderLayout()
