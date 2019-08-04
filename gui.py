@@ -15,7 +15,12 @@ class GuiDigitalSignature(QtWidgets.QWidget):
   def closeEvent(self, event):
     self.windowClosing = True
     return super().closeEvent(event)
-    
+
+
+  def Alert(self, message):
+    alert = QtWidgets.QMessageBox()
+    alert.warning(self, "Error", message)
+
 
   def InitGui(self):
     self.InitTitleAndWindow() # Initialise Title and Window of the interface
@@ -34,7 +39,7 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     # Set Window Size
     windowSize = QtCore.QSize(800, 600) 
 
-    # Put Window onto cetner of the device
+    # Put Window onto center of the device
     screen = QtGui.QGuiApplication.primaryScreen()
     screenGeometry = screen.geometry() # Get device's screen size
     self.setGeometry(QtWidgets.QStyle.alignedRect(QtCore.Qt.LeftToRight, QtCore.Qt.AlignCenter, windowSize, screenGeometry))
@@ -76,54 +81,98 @@ class GuiDigitalSignature(QtWidgets.QWidget):
 
 
   def SetSenderLayout(self):
+    # Email Edit Field validation
+    def ValidateEmail(sender):
+      if self.windowClosing is True:
+        return
+
+      rx = QtCore.QRegExp("^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$")
+      emailValidator = QtGui.QRegExpValidator(rx, self)
+
+      if (emailValidator.validate(sender.text(), 0)[0] != QtGui.QValidator.State.Acceptable):
+        self.Alert("Invalid Email!")
+        sender.setStyleSheet('background-color: #ffcdd2; ')
+        sender.setFocus()
+      else:
+        sender.setStyleSheet('background-color: white; ')
+        messageEdit.setFocus()
+
+    # Validate Message Edit field
+    def ValidateMessage(sender):
+      if self.windowClosing is True:
+        return
+      
+      if sender.toPlainText() == "":
+        self.Alert("Message must not be empty")
+        sender.setStyleSheet('background-color: #ffcdd2; ')
+        sender.setFocus
+      else:
+        sender.setStyleSheet('background-color: white; ')
+
+    
+    def ValidateInput():
+      ValidateEmail(emailEdit)
+      ValidateMessage(messageEdit)
+
+    # main layout for the Sender content area
     layout = QtWidgets.QVBoxLayout()
 
+    # set the title for the Sender content area
     titleLabel = QtWidgets.QLabel("Sender")
     layout.addWidget(titleLabel)
     
     # Email Edit Field
     emailEdit = QtWidgets.QLineEdit()
     emailEdit.setPlaceholderText("Sender's Email")
-
-    rx = QtCore.QRegExp("^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$")
-    emailEdit.setValidator(QtGui.QRegExpValidator(rx, self))
+    emailEdit.setToolTip("Sender's Email")
+    emailEdit.editingFinished.connect(lambda: ValidateEmail(emailEdit)) # Email Edit onblur
     layout.addWidget(emailEdit)
 
-    # Public and Private Keys Field
+    # Public and Private Keys label
     keysLabel = QtWidgets.QLabel("Keys")
     layout.addWidget(keysLabel)
-
+    # Public and Private keys edit field
     publicEdit = QtWidgets.QLineEdit()
     publicEdit.setPlaceholderText("Public Key")
+    publicEdit.setReadOnly(True)
+    publicEdit.setToolTip("Public Key")
     privateEdit = QtWidgets.QLineEdit()
     privateEdit.setPlaceholderText("Private Key")
-
+    privateEdit.setReadOnly(True)
+    privateEdit.setToolTip("Private Key")
+    # Layout for public and private keys
     keysLayout = QtWidgets.QHBoxLayout()
     keysLayout.addWidget(publicEdit)
     keysLayout.addWidget(privateEdit)
-    
     layout.addLayout(keysLayout)
 
-    # Message Field
+    # Message label
     messageLabel = QtWidgets.QLabel("Message")
     layout.addWidget(messageLabel)
-
+    # Message edit field
     messageEdit = QtWidgets.QTextEdit()
     layout.addWidget(messageEdit)
-
-    # Hash Field
+    
+    # Hash label
     hashLabel = QtWidgets.QLabel("Hash")
     layout.addWidget(hashLabel)
-
+    # Hash edit field
     hashEdit = QtWidgets.QTextEdit()
+    hashEdit.setReadOnly(True)
     layout.addWidget(hashEdit)
 
-    # Signature Field
+    # Signature label
     signLabel = QtWidgets.QLabel("Signature")
     layout.addWidget(signLabel)
-
+    # Signature edit field
     signEdit = QtWidgets.QTextEdit()
+    signEdit.setReadOnly(True)
     layout.addWidget(signEdit)
+
+    # Send Button
+    sendButton = QtWidgets.QPushButton("Send")
+    sendButton.clicked.connect(ValidateInput) # sendButton onclicked
+    layout.addWidget(sendButton)
 
     return layout
 
