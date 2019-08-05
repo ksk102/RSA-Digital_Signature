@@ -8,6 +8,7 @@ class GuiMenu:
   def __init__(self, window):
     self.pki = Pki()
     self.rsa = RsaPssSignature()
+    self.rsaReceiver = RsaPssSignature()
 
     self.email = ""
     self.emailChanged = False
@@ -103,7 +104,7 @@ class GuiMenu:
   @QtCore.Slot()
   def GetSenderPublicKey(self):
     senderPublicKey = self.pki.GetPublicKey(self.email)
-    senderPublicKeyPEM = self.rsa.GetKeyInPEM(senderPublicKey)
+    senderPublicKeyPEM = self.rsaReceiver.GetKeyInPEM(senderPublicKey)
 
     window.senderPublic.setText(senderPublicKeyPEM)
 
@@ -111,11 +112,13 @@ class GuiMenu:
   @QtCore.Slot(str)
   def ShowMessageSignature(self, signedDoc):
     # trim the message out from the signature document
-    message = self.rsa.GetMessageFromSignedDoc(signedDoc)
+    message = self.rsaReceiver.GetMessageFromSignedDoc(signedDoc)
 
-    if message != False:
+    # check the format of the signature
+    if message:
       window.signedDocument.setStyleSheet('background-color: white; ')
       window.receiverMessage.setText(message)
+      self.rsaReceiver.SetMessage(message)
     else:
       window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
       window.signedDocument.setFocus()
