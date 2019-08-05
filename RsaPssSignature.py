@@ -151,13 +151,13 @@ class RsaPssSignature:
 
   def GetHashAlgoFromSignedDoc(self, signedDoc):
     regexStart = '^(-----BEGIN RSA PSS MESSAGE-----)(\s)(Hash: )'
-    regexEnd = '(\s){2}(.*)(\s)(-----BEGIN RSA PSS SIGNATURE-----)(\s)(.*)(\s)(-----END RSA PSS SIGNATURE-----)$'
+    regexEnd = '(\s){2}(.|\s)*(\s)(-----BEGIN RSA PSS SIGNATURE-----)(\s)(.*)(\s)(-----END RSA PSS SIGNATURE-----)$'
     
     return self.GetValueFromSignedDoc(signedDoc, regexStart, regexEnd)
 
   
   def GetSignatureFromSignedDoc(self, signedDoc):
-    regexStart = '^(-----BEGIN RSA PSS MESSAGE-----)(\s)(Hash: )(\w+)(\s){2}(.*)(\s)(-----BEGIN RSA PSS SIGNATURE-----)(\s)'
+    regexStart = '^(-----BEGIN RSA PSS MESSAGE-----)(\s)(Hash: )(\w+)(\s){2}(.|\s)*(\s)(-----BEGIN RSA PSS SIGNATURE-----)(\s)'
     regexEnd = '(\s)(-----END RSA PSS SIGNATURE-----)$'
 
     return self.GetValueFromSignedDoc(signedDoc, regexStart, regexEnd)
