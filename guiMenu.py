@@ -24,6 +24,7 @@ class GuiMenu:
     window.guiSignal.sendOnClicked.connect(self.GetSenderPublicKey)
     window.guiSignal.signedDocumentChanged.connect(self.ShowMessageSignature)
     window.guiSignal.signedDocumentChanged.connect(self.GenerateReceiveHash)
+    window.guiSignal.signedDocumentChanged.connect(self.ShowReceiveSignature)
 
 
   @QtCore.Slot(str)
@@ -148,6 +149,20 @@ class GuiMenu:
       window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
       window.generatedHash.setText("")
       window.Alert("Supported Hashing Function: \nSHA256, SHA384, SHA512, SHA1, MD5")
+
+  
+  @QtCore.Slot(str)
+  def ShowReceiveSignature(self, signedDoc):
+    signature = self.rsaReceiver.GetSignatureFromSignedDoc(signedDoc)
+    
+    if signature:
+      window.signedDocument.setStyleSheet('background-color: white; ')
+      window.receiveSignature.setText(signature)
+    else:
+      window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
+      window.signedDocument.setFocus()
+      window.receiveSignature.setText("")
+      window.Alert("Incorrect Signature Document Format")
 
 
 if __name__ == "__main__":
