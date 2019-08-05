@@ -25,6 +25,8 @@ class RsaPssSignature:
     self.private = key
     self.public = key.publickey()
 
+    return self.public, self.private
+
   # Hash the message
   def HashMessage(self, message = None):
     if not message:
@@ -74,13 +76,14 @@ class RsaPssSignature:
 
   # Get the private key
   def GetPrivateKey(self):
-    return str(self.private.exportKey("PEM"))
-    # return str(self.private)
+    return GetKeyInPEM(self.private) 
   
   # Get the public key
   def GetPublicKey(self):
-    return str(self.public.exportKey("PEM"))
-    # return (self.public)
+    return GetKeyInPEM(self.public)
+
+  def GetKeyInPEM(self, key):
+    return str(key.exportKey("PEM"))
 
   # Get the hashed message
   def GetHashedMessage(self):

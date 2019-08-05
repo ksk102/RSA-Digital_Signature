@@ -11,16 +11,18 @@ class Pki:
   def checkPair(self, email):
     # if email exists return the public key, else generate public and private keys
     if email in self.publicKeyPair:
-      return self.publicKeyPair[email], self.privateKeyPair[email]
+      return self.rsa.GetKeyInPEM(self.publicKeyPair[email]), self.rsa.GetKeyInPEM(self.privateKeyPair[email])
     else:
-      self.rsa.GenerateKeys() # generate public and private keys
+      publicKey, privateKey = self.rsa.GenerateKeys() # generate public and private keys
 
-      publicKey = self.rsa.GetPublicKey()
-      privateKey = self.rsa.GetPrivateKey()
+      # convert to string type
+      publicKeyPEM = self.rsa.GetKeyInPEM(publicKey)
+      privateKeyPEM = self.rsa.GetKeyInPEM(privateKey)
 
       # add the public and private key into dictionary
       self.addPair(email, publicKey, privateKey)
-      return publicKey, privateKey
+
+      return publicKeyPEM, privateKeyPEM
 
 
   def addPair(self, email, publicKey, privateKey):
