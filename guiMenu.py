@@ -19,6 +19,8 @@ class GuiMenu:
     window.guiSignal.messageOnKeyPress.connect(self.GenerateHash)
     window.guiSignal.messageOnKeyPress.connect(self.GenerateSignature)
 
+    window.guiSignal.sendOnClicked.connect(self.ReceiveSignatureDocument)
+
 
   @QtCore.Slot(str)
   def DisplayKeys(self, email):
@@ -91,12 +93,16 @@ class GuiMenu:
     # set the plaintext signature on edit field
     window.signature.setText(self.rsa.GetSignature())
 
+  @QtCore.Slot()
+  def ReceiveSignatureDocument(self):
+    window.signedDocument.setText(self.rsa.GetSignedDocument())
 
+  
 if __name__ == "__main__":
   app = QtWidgets.QApplication([])
 
   window = GuiDigitalSignature()
-  window.show()
+  window.showMaximized()
 
   menu = GuiMenu(window)
 
