@@ -107,3 +107,15 @@ class RsaPssSignature:
       return "SHA1"
     elif HashType == MD5:
       return "MD5"
+
+  def GetSignedDocument(self):
+    signedDocument = ""
+    signedDocument += "-----BEGIN RSA PSS MESSAGE-----\n"
+    signedDocument += "Hash: " + str(self.GetHashAlgo()) + "\n\n"
+    signedDocument += self.GetMessage() + "\n"
+    
+    signedDocument += "-----BEGIN RSA PSS SIGNATURE-----\n"
+    signedDocument += self.GetSignature() + "\n"
+    signedDocument += "-----END RSA PSS SIGNATURE-----"
+
+    return signedDocument
