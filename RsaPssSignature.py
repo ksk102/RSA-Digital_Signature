@@ -9,6 +9,23 @@ class RsaPssSignature:
   # Set the hashing algorithm
   hashAlgo = SHA256
 
+  # Method to set the hashing algorith
+  def SetHashAlgo(self, hashMethod):
+    if hashMethod == "SHA256":
+      self.hashAlgo = SHA256    
+    elif hashMethod == "SHA384":
+      self.hashAlgo = SHA384
+    elif hashMethod == "SHA512":
+      self.hashAlgo = SHA512
+    elif hashMethod == "SHA1":
+      self.hashAlgo = SHA1
+    elif hashMethod == "MD5":
+      self.hashAlgo = MD5
+    else:
+      return False
+
+    return True
+
   # Set the message for signing
   def SetMessage(self, message):
     # message cannot be empty
@@ -122,10 +139,22 @@ class RsaPssSignature:
     return signedDocument
 
   def GetMessageFromSignedDoc(self, signedDoc):
-    message = signedDoc
-
-    regexStart = '^(-----BEGIN RSA PSS MESSAGE-----)(\s)(Hash: )(' + self.GetHashAlgo() + ')(\s\s)'
+    regexStart = '^(-----BEGIN RSA PSS MESSAGE-----)(\s)(Hash: )(\w+)(\s\s)'
+    # regexStart = '^(-----BEGIN RSA PSS MESSAGE-----)(\s)(Hash: )(' + self.GetHashAlgo() + ')(\s\s)'
     regexEnd = '(-----BEGIN RSA PSS SIGNATURE-----)(\s)(.*)(\s)(-----END RSA PSS SIGNATURE-----)$'
+
+    return self.GetValueFromSignedDoc(signedDoc, regexStart, regexEnd)
+
+
+  def GetHashAlgoFromSignedDoc(self, signedDoc):
+    regexStart = '^(-----BEGIN RSA PSS MESSAGE-----)(\s)(Hash: )'
+    regexEnd = '(\s){2}(.*)(\s)(-----BEGIN RSA PSS SIGNATURE-----)(\s)(.*)(\s)(-----END RSA PSS SIGNATURE-----)$'
+    
+    return self.GetValueFromSignedDoc(signedDoc, regexStart, regexEnd)
+
+
+  def GetValueFromSignedDoc(self, signedDoc, regexStart, regexEnd):
+    message = signedDoc
 
     if re.search(regexStart, message) and re.search(regexEnd, message):
       message = re.sub(regexStart, "", message)
@@ -133,6 +162,5 @@ class RsaPssSignature:
       message = message.strip()
 
       return message
-
     else:
       return False
