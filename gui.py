@@ -122,6 +122,7 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     def EmitMessageChangeSignal(sender):
       if sender.toPlainText().strip() == "":
         self.hash.setText("")
+        self.signature.setText("")
       else:
         self.guiSignal.messageOnKeyPress.emit(sender.toPlainText())
 
@@ -185,6 +186,8 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     signEdit = QtWidgets.QTextEdit()
     signEdit.setReadOnly(True)
     layout.addWidget(signEdit)
+    # export signature edit field
+    self.signature = signEdit
 
     # Send Button
     sendButton = QtWidgets.QPushButton("Send")

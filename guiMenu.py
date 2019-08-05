@@ -9,18 +9,34 @@ class GuiMenu:
     self.pki = Pki()
     self.rsa = RsaPssSignature()
 
+    self.email = ""
+    self.emailChanged = False
+    self.hashedMessage = ""
+    self.hashChanged = False
+
     window.guiSignal.emailReady.connect(self.DisplayKeys)
+    window.guiSignal.emailReady.connect(self.GenerateSignature)
     window.guiSignal.messageOnKeyPress.connect(self.GenerateHash)
+    window.guiSignal.messageOnKeyPress.connect(self.GenerateSignature)
 
 
   @QtCore.Slot(str)
   def DisplayKeys(self, email):
+    # To check whether user changed the email
+    # Used to prevent system from regenerate the signature when user click Send
+    # It is because emailReady Signal will be triggered everytime the Send button is clicked
+    if self.email != email:
+      self.email = email
+      self.emailChanged = True
+    else:
+      self.emailChanged = False
+
     # Get the keys from PKI
-    publicKey, privateKey = self.pki.checkPair(email)
+    publicKey, self.privateKey = self.pki.checkPair(email)
 
     # convert to string type
     publicKeyPEM = self.rsa.GetKeyInPEM(publicKey)
-    privateKeyPEM = self.rsa.GetKeyInPEM(privateKey)
+    privateKeyPEM = self.rsa.GetKeyInPEM(self.privateKey)
 
     # Set Text on the TextEdit fields
     window.privateKey.setText(privateKeyPEM)
@@ -30,9 +46,40 @@ class GuiMenu:
   @QtCore.Slot(str)
   def GenerateHash(self, message):
     if self.rsa.SetMessage(message):
+      # Hash the message
       self.rsa.HashMessage()
+      # Set the plaintext hash on the edit field
+      hashedMessage = self.rsa.GetHashedMessage()
+      window.hash.setText(hashedMessage)
 
-      window.hash.setText(self.rsa.GetHashedMessage())
+
+  # Generate signature based on hash
+  def GenerateSignature(self, email):
+    # check if message hash exists, if yes, then proceed, else return
+    # use to generate a new signature after user change the email
+    try:
+      hashedMessage = self.rsa.GetHashedMessage()
+    except AttributeError:
+      return
+
+    # To check whether user have changed the message
+    # Generate the signature when the message is changed
+    if self.hashedMessage != hashedMessage:
+        self.hashedMessage = hashedMessage
+        self.hashChanged = True
+    else:
+      self.hashChanged = False
+    # Used to prevent system from regenerate the signature when user click Send
+    # It is because emailReady Signal will be triggered everytime the Send button is clicked
+    # If hashChanged check is not exists, signature will not be regenerate as emailChanged is evaluate as False
+    # Here it generate the signature when hash is changed
+    if (self.emailChanged is False) and (self.hashChanged is False):
+      return
+
+    # sign the hash using private key
+    self.rsa.SignSignature(key = self.privateKey)
+    # set the plaintext signature on edit field
+    window.signature.setText(self.rsa.GetSignature())
 
 
 if __name__ == "__main__":
