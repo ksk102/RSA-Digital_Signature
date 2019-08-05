@@ -30,9 +30,15 @@ class GuiMenu:
       self.emailChanged = True
     else:
       self.emailChanged = False
+      return
+
+    # To check whether the email entered is a new email
+    newEmail = False
+    if not self.pki.CheckEntryExists(email):
+      newEmail = True
 
     # Get the keys from PKI
-    publicKey, self.privateKey = self.pki.checkPair(email)
+    publicKey, self.privateKey = self.pki.CheckPair(email)
 
     # convert to string type
     publicKeyPEM = self.rsa.GetKeyInPEM(publicKey)
@@ -41,6 +47,10 @@ class GuiMenu:
     # Set Text on the TextEdit fields
     window.privateKey.setText(privateKeyPEM)
     window.publicKey.setText(publicKeyPEM)
+
+    # if it is a new email, add an entry on PKI content area
+    if newEmail:
+      window.AddPkiEntry(email, publicKeyPEM)
 
 
   @QtCore.Slot(str)
