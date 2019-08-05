@@ -15,7 +15,7 @@ class RsaPssSignature:
     if message == "" or not message:
       return False
     else:
-      self.message = message
+      self.message = message.strip()
       return True
 
   # Generate public and private key
