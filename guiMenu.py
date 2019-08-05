@@ -8,7 +8,6 @@ class GuiMenu:
     self.pki = Pki()
 
     window.guiSignal.emailReady.connect(self.DisplayKeys)
-    window.guiSignal.emailReady.connect(self.AddKeyPairs)
 
 
   @QtCore.Slot(str)
@@ -19,10 +18,6 @@ class GuiMenu:
     # Set Text on the TextEdit fields
     window.privateKey.setText(privateKey)
     window.publicKey.setText(publicKey)
-
-  @QtCore.Slot(str)
-  def AddKeyPairs(self, email):
-    None
 
 
 if __name__ == "__main__":
