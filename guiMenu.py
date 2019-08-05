@@ -14,22 +14,48 @@ class GuiMenu:
     self.emailChanged = False
     self.hashedMessage = ""
     self.hashChanged = False
+    self.sendButtonCount = 0
 
-    window.guiSignal.emailReady.connect(self.DisplayKeys)
-    window.guiSignal.emailReady.connect(self.GenerateSignature)
-    window.guiSignal.messageOnKeyPress.connect(self.GenerateHash)
-    window.guiSignal.messageOnKeyPress.connect(self.GenerateSignature)
-
-    window.guiSignal.sendOnClicked.connect(self.ReceiveSignatureDocument)
-    window.guiSignal.sendOnClicked.connect(self.GetSenderPublicKey)
-    window.guiSignal.signedDocumentChanged.connect(self.ShowMessageSignature)
-    window.guiSignal.signedDocumentChanged.connect(self.GenerateReceiveHash)
-    window.guiSignal.signedDocumentChanged.connect(self.ShowReceiveSignature)
-
-    window.guiSignal.signedDocumentChanged.connect(self.VerifySignatureReceived)
+    # To make function called in sequences
+    window.guiSignal.emailReady.connect(self.emailReadyCall)
+    window.guiSignal.messageOnKeyPress.connect(self.messageOnKeyPressCall)
+    window.guiSignal.sendOnClicked.connect(self.sendOnClickedCall)
 
 
   @QtCore.Slot(str)
+  def emailReadyCall(self, email):
+    self.DisplayKeys(email)
+    self.GenerateSignature()
+
+
+  @QtCore.Slot(str)
+  def messageOnKeyPressCall(self, message):
+    self.GenerateHash(message)
+    self.GenerateSignature()
+
+  
+  @QtCore.Slot()
+  def sendOnClickedCall(self):
+    self.ReceiveSignatureDocument()
+    self.GetSenderPublicKey()
+
+    self.signedDocumentChangedCall(window.signedDocument.toPlainText())
+
+    # Call after sendOnClicked finished
+    if self.sendButtonCount == 0:
+      window.guiSignal.signedDocumentChanged.connect(self.signedDocumentChangedCall)
+    
+    self.sendButtonCount += 1
+  
+
+  @QtCore.Slot(str)
+  def signedDocumentChangedCall(self, signedDoc):
+    self.ShowMessageSignature(signedDoc)
+    self.GenerateReceiveHash(signedDoc)
+    self.ShowReceiveSignature(signedDoc)
+    self.VerifySignatureReceived()
+
+
   def DisplayKeys(self, email):
     # To check whether user changed the email
     # Used to prevent system from regenerate the signature when user click Send
@@ -62,7 +88,6 @@ class GuiMenu:
       window.AddPkiEntry(email, publicKeyPEM)
 
 
-  @QtCore.Slot(str)
   def GenerateHash(self, message):
     if self.rsa.SetMessage(message):
       # Hash the message
@@ -73,7 +98,7 @@ class GuiMenu:
 
 
   # Generate signature based on hash
-  def GenerateSignature(self, email):
+  def GenerateSignature(self):
     # check if message hash exists, if yes, then proceed, else return
     # use to generate a new signature after user change the email
     try:
@@ -100,12 +125,11 @@ class GuiMenu:
     # set the plaintext signature on edit field
     window.signature.setText(self.rsa.GetSignature())
 
-  @QtCore.Slot()
+
   def ReceiveSignatureDocument(self):
     window.signedDocument.setText(self.rsa.GetSignedDocument())
 
   
-  @QtCore.Slot()
   def GetSenderPublicKey(self):
     self.senderPublicKey = self.pki.GetPublicKey(self.email)
     senderPublicKeyPEM = self.rsaReceiver.GetKeyInPEM(self.senderPublicKey)
@@ -113,7 +137,6 @@ class GuiMenu:
     window.senderPublic.setText(senderPublicKeyPEM)
 
   
-  @QtCore.Slot(str)
   def ShowMessageSignature(self, signedDoc):
     # trim the message out from the signature document
     message = self.rsaReceiver.GetMessageFromSignedDoc(signedDoc)
@@ -135,7 +158,6 @@ class GuiMenu:
       window.Alert("Incorrect Signature Document Format")
 
 
-  @QtCore.Slot(str)
   def GenerateReceiveHash(self, signedDoc):
     # Get the hashAlgo from "Hash: " section of the signed document
     hashAlgo = self.rsaReceiver.GetHashAlgoFromSignedDoc(signedDoc)
