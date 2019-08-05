@@ -3,6 +3,7 @@ from PySide2 import QtCore, QtWidgets, QtGui
 # Signal and Slot function
 class GuiSignal(QtCore.QObject):
   emailReady = QtCore.Signal(str)
+  messageOnKeyPress = QtCore.Signal(str)
 
 
 class GuiDigitalSignature(QtWidgets.QWidget):
@@ -118,6 +119,12 @@ class GuiDigitalSignature(QtWidgets.QWidget):
       ValidateEmail(emailEdit)
       ValidateMessage(messageEdit)
 
+    def EmitMessageChangeSignal(sender):
+      if sender.toPlainText().strip() == "":
+        self.hash.setText("")
+      else:
+        self.guiSignal.messageOnKeyPress.emit(sender.toPlainText())
+
     # main layout for the Sender content area
     layout = QtWidgets.QVBoxLayout()
 
@@ -158,6 +165,7 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     layout.addWidget(messageLabel)
     # Message edit field
     messageEdit = QtWidgets.QTextEdit()
+    messageEdit.textChanged.connect(lambda: EmitMessageChangeSignal(messageEdit)) # messageEdit onkeypress
     layout.addWidget(messageEdit)
     
     # Hash label
@@ -167,6 +175,8 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     hashEdit = QtWidgets.QTextEdit()
     hashEdit.setReadOnly(True)
     layout.addWidget(hashEdit)
+    # export hash edit field
+    self.hash = hashEdit
 
     # Signature label
     signLabel = QtWidgets.QLabel("Signature")
