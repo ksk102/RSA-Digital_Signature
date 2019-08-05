@@ -111,6 +111,9 @@ class RsaPssSignature:
   def GetSignature(self):
     return b64encode(self.signature).decode()
 
+  def GetSignatureFromString(self, signature):
+    return b64decode(signature.encode('utf-8'))
+
   def GetHashAlgo(self, HashType = None):
     if HashType is None:
       HashType = self.hashAlgo

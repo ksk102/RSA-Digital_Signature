@@ -301,6 +301,8 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     verifiedIndicate.setReadOnly(True)
     verifiedIndicate.setAlignment(QtCore.Qt.AlignHCenter)
     layout.addWidget(verifiedIndicate)
+    # export indicator
+    self.indicator = verifiedIndicate
 
     return layout
 

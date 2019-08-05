@@ -26,6 +26,8 @@ class GuiMenu:
     window.guiSignal.signedDocumentChanged.connect(self.GenerateReceiveHash)
     window.guiSignal.signedDocumentChanged.connect(self.ShowReceiveSignature)
 
+    window.guiSignal.signedDocumentChanged.connect(self.VerifySignatureReceived)
+
 
   @QtCore.Slot(str)
   def DisplayKeys(self, email):
@@ -105,8 +107,8 @@ class GuiMenu:
   
   @QtCore.Slot()
   def GetSenderPublicKey(self):
-    senderPublicKey = self.pki.GetPublicKey(self.email)
-    senderPublicKeyPEM = self.rsaReceiver.GetKeyInPEM(senderPublicKey)
+    self.senderPublicKey = self.pki.GetPublicKey(self.email)
+    senderPublicKeyPEM = self.rsaReceiver.GetKeyInPEM(self.senderPublicKey)
 
     window.senderPublic.setText(senderPublicKeyPEM)
 
@@ -128,6 +130,8 @@ class GuiMenu:
       window.receiveSignature.setText("")
       window.generatedHash.setText("")
       window.retrievedHash.setText("")
+      window.indicator.setText("")
+      window.indicator.setStyleSheet('background-color: white; ')
       window.Alert("Incorrect Signature Document Format")
 
 
@@ -148,6 +152,8 @@ class GuiMenu:
     else:
       window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
       window.generatedHash.setText("")
+      window.indicator.setText("")
+      window.indicator.setStyleSheet('background-color: white; ')
       window.Alert("Supported Hashing Function: \nSHA256, SHA384, SHA512, SHA1, MD5")
 
   
@@ -162,7 +168,24 @@ class GuiMenu:
       window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
       window.signedDocument.setFocus()
       window.receiveSignature.setText("")
+      window.indicator.setText("")
+      window.indicator.setStyleSheet('background-color: white; ')
       window.Alert("Incorrect Signature Document Format")
+
+
+  @QtCore.Slot()
+  def VerifySignatureReceived(self):
+    receiveSignature = window.receiveSignature.toPlainText()
+    signatureByte = self.rsaReceiver.GetSignatureFromString(receiveSignature)
+
+    signatureVerified = self.rsaReceiver.VerifySignature(signature = signatureByte, key = self.senderPublicKey)
+
+    if signatureVerified:
+      window.indicator.setStyleSheet('background-color: #a5d6a7; ')
+      window.indicator.setText("Signature Verified")
+    else:
+      window.indicator.setStyleSheet('background-color: #ffcdd2; ')
+      window.indicator.setText("Invalid Signature")
 
 
 if __name__ == "__main__":
