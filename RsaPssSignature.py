@@ -1,6 +1,6 @@
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pss
-from Crypto.Hash import SHA256
+from Crypto.Hash import SHA256, SHA384, SHA512, SHA1, MD5
 from Crypto import Random
 from base64 import b64encode, b64decode
 
@@ -92,3 +92,18 @@ class RsaPssSignature:
   # Get the signature of the message
   def GetSignature(self):
     return str(b64encode(self.signature))
+
+  def GetHashAlgo(self, HashType = None):
+    if HashType is None:
+      HashType = self.hashAlgo
+
+    if HashType == SHA256:
+      return "SHA256"
+    elif HashType == SHA384:
+      return "SHA384"
+    elif HashType == SHA512:
+      return "SHA512"
+    elif HashType == SHA1:
+      return "SHA1"
+    elif HashType == MD5:
+      return "MD5"
