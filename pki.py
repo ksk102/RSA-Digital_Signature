@@ -13,13 +13,13 @@ class Pki:
     if email in self.publicKeyPair:
       return self.publicKeyPair[email], self.privateKeyPair[email]
     else:
-      rsa.GenerateKeys() # generate public and private keys
+      self.rsa.GenerateKeys() # generate public and private keys
 
-      publicKey = rsa.GetPublicKey()
-      privateKey = rsa.GetPrivateKey()
+      publicKey = self.rsa.GetPublicKey()
+      privateKey = self.rsa.GetPrivateKey()
 
       # add the public and private key into dictionary
-      addPair(email, publicKey, privateKey)
+      self.addPair(email, publicKey, privateKey)
       return publicKey, privateKey
 
 
