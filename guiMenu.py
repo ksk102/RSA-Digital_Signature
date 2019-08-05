@@ -20,6 +20,7 @@ class GuiMenu:
     window.guiSignal.messageOnKeyPress.connect(self.GenerateSignature)
 
     window.guiSignal.sendOnClicked.connect(self.ReceiveSignatureDocument)
+    window.guiSignal.sendOnClicked.connect(self.GetSenderPublicKey)
 
 
   @QtCore.Slot(str)
@@ -98,6 +99,14 @@ class GuiMenu:
     window.signedDocument.setText(self.rsa.GetSignedDocument())
 
   
+  @QtCore.Slot()
+  def GetSenderPublicKey(self):
+    senderPublicKey = self.pki.GetPublicKey(self.email)
+    senderPublicKeyPEM = self.rsa.GetKeyInPEM(senderPublicKey)
+
+    window.senderPublic.setText(senderPublicKeyPEM)
+
+
 if __name__ == "__main__":
   app = QtWidgets.QApplication([])
 

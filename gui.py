@@ -224,6 +224,8 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     publicEdit = QtWidgets.QTextEdit()
     publicEdit.setReadOnly(True)
     layout.addWidget(publicEdit)
+    # export publicEdit field
+    self.senderPublic = publicEdit
 
     # Message and Signature label
     messageLabel = QtWidgets.QLabel("Message")

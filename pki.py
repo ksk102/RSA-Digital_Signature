@@ -31,3 +31,6 @@ class Pki:
       return True
     else:
       return False
+
+  def GetPublicKey(self, email):
+    return self.publicKeyPair[email]
