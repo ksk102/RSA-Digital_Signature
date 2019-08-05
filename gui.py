@@ -1,6 +1,8 @@
-import sys
-import random
 from PySide2 import QtCore, QtWidgets, QtGui
+
+# Signal and Slot function
+class GuiSignal(QtCore.QObject):
+  emailReady = QtCore.Signal(str)
 
 
 class GuiDigitalSignature(QtWidgets.QWidget):
@@ -8,6 +10,7 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     super().__init__()
 
     self.windowClosing = False
+    self.guiSignal = GuiSignal()
 
     self.InitGui()
 
@@ -96,6 +99,7 @@ class GuiDigitalSignature(QtWidgets.QWidget):
       else:
         sender.setStyleSheet('background-color: white; ')
         messageEdit.setFocus()
+        self.guiSignal.emailReady.emit(emailEdit.text())
 
     # Validate Message Edit field
     def ValidateMessage(sender):
@@ -132,11 +136,11 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     keysLabel = QtWidgets.QLabel("Keys")
     layout.addWidget(keysLabel)
     # Public and Private keys edit field
-    publicEdit = QtWidgets.QLineEdit()
+    publicEdit = QtWidgets.QTextEdit()
     publicEdit.setPlaceholderText("Public Key")
     publicEdit.setReadOnly(True)
     publicEdit.setToolTip("Public Key")
-    privateEdit = QtWidgets.QLineEdit()
+    privateEdit = QtWidgets.QTextEdit()
     privateEdit.setPlaceholderText("Private Key")
     privateEdit.setReadOnly(True)
     privateEdit.setToolTip("Private Key")
@@ -145,6 +149,9 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     keysLayout.addWidget(publicEdit)
     keysLayout.addWidget(privateEdit)
     layout.addLayout(keysLayout)
+    # Export keys
+    self.publicKey = publicEdit
+    self.privateKey = privateEdit
 
     # Message label
     messageLabel = QtWidgets.QLabel("Message")
@@ -194,7 +201,7 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     publicLabel = QtWidgets.QLabel("Sender's Public Key")
     layout.addWidget(publicLabel)
     # Sender's public key edit field
-    publicEdit = QtWidgets.QLineEdit()
+    publicEdit = QtWidgets.QTextEdit()
     publicEdit.setReadOnly(True)
     layout.addWidget(publicEdit)
 
@@ -300,12 +307,3 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     layout.addWidget(scrollArea)
 
     return layout
-
-
-if __name__ == "__main__":
-  app = QtWidgets.QApplication([])
-
-  window = GuiDigitalSignature()
-  window.show()
-
-  sys.exit(app.exec_())
