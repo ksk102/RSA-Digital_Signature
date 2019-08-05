@@ -94,11 +94,11 @@ class RsaPssSignature:
 
   # Get the private key
   def GetPrivateKey(self):
-    return GetKeyInPEM(self.private) 
+    return self.GetKeyInPEM(self.private) 
   
   # Get the public key
   def GetPublicKey(self):
-    return GetKeyInPEM(self.public)
+    return self.GetKeyInPEM(self.public)
 
   def GetKeyInPEM(self, key):
     return str(key.exportKey("PEM"))
