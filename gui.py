@@ -4,6 +4,7 @@ from PySide2 import QtCore, QtWidgets, QtGui
 class GuiSignal(QtCore.QObject):
   emailReady = QtCore.Signal(str)
   messageOnKeyPress = QtCore.Signal(str)
+  sendOnClicked = QtCore.Signal()
 
 
 class GuiDigitalSignature(QtWidgets.QWidget):
@@ -97,10 +98,12 @@ class GuiDigitalSignature(QtWidgets.QWidget):
         self.Alert("Invalid Email!")
         sender.setStyleSheet('background-color: #ffcdd2; ')
         sender.setFocus()
+        return False
       else:
         sender.setStyleSheet('background-color: white; ')
         messageEdit.setFocus()
         self.guiSignal.emailReady.emit(emailEdit.text())
+        return True
 
     # Validate Message Edit field
     def ValidateMessage(sender):
@@ -111,13 +114,15 @@ class GuiDigitalSignature(QtWidgets.QWidget):
         self.Alert("Message must not be empty")
         sender.setStyleSheet('background-color: #ffcdd2; ')
         sender.setFocus
+        return False
       else:
         sender.setStyleSheet('background-color: white; ')
+        return True
 
     
     def ValidateInput():
-      ValidateEmail(emailEdit)
-      ValidateMessage(messageEdit)
+      if ValidateEmail(emailEdit) and ValidateMessage(messageEdit):
+        self.guiSignal.sendOnClicked.emit()
 
     def EmitMessageChangeSignal(sender):
       if sender.toPlainText().strip() == "":
@@ -209,6 +214,8 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     signedEdit.setPlaceholderText("Retrieved Signed Document")
     signedEdit.setToolTip("Retrieved Signed Document")
     layout.addWidget(signedEdit)
+    # export signedEdit field
+    self.signedDocument = signedEdit
 
     # Sender's Public Key label
     publicLabel = QtWidgets.QLabel("Sender's Public Key")
