@@ -23,6 +23,7 @@ class GuiMenu:
     window.guiSignal.sendOnClicked.connect(self.ReceiveSignatureDocument)
     window.guiSignal.sendOnClicked.connect(self.GetSenderPublicKey)
     window.guiSignal.signedDocumentChanged.connect(self.ShowMessageSignature)
+    window.guiSignal.signedDocumentChanged.connect(self.GenerateReceiveHash)
 
 
   @QtCore.Slot(str)
@@ -127,6 +128,26 @@ class GuiMenu:
       window.generatedHash.setText("")
       window.retrievedHash.setText("")
       window.Alert("Incorrect Signature Document Format")
+
+
+  @QtCore.Slot(str)
+  def GenerateReceiveHash(self, signedDoc):
+    # Get the hashAlgo from "Hash: " section of the signed document
+    hashAlgo = self.rsaReceiver.GetHashAlgoFromSignedDoc(signedDoc)
+
+    # Check whether it is the supported hash function
+    if self.rsaReceiver.SetHashAlgo(hashAlgo):
+      window.signedDocument.setStyleSheet('background-color: white; ')
+    else:
+      window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
+      window.generatedHash.setText("")
+      window.Alert("Supported Hashing Function: \nSHA256, SHA384, SHA512, SHA1, MD5")
+
+    # Generate the hash value using the hashing function given
+    self.rsaReceiver.HashMessage()
+    # Set the plaintext hash on the edit field
+    hashedMessage = self.rsaReceiver.GetHashedMessage()
+    window.generatedHash.setText(hashedMessage)
 
 
 if __name__ == "__main__":
