@@ -101,7 +101,7 @@ class RsaPssSignature:
     return self.GetKeyInPEM(self.public)
 
   def GetKeyInPEM(self, key):
-    return str(key.exportKey("PEM"))
+    return key.exportKey("PEM").decode('utf-8')
 
   # Get the hashed message
   def GetHashedMessage(self):
@@ -109,7 +109,7 @@ class RsaPssSignature:
 
   # Get the signature of the message
   def GetSignature(self):
-    return str(b64encode(self.signature))
+    return b64encode(self.signature).decode()
 
   def GetHashAlgo(self, HashType = None):
     if HashType is None:
