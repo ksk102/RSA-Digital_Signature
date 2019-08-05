@@ -18,9 +18,13 @@ class GuiMenu:
     # Get the keys from PKI
     publicKey, privateKey = self.pki.checkPair(email)
 
+    # convert to string type
+    publicKeyPEM = self.rsa.GetKeyInPEM(publicKey)
+    privateKeyPEM = self.rsa.GetKeyInPEM(privateKey)
+
     # Set Text on the TextEdit fields
-    window.privateKey.setText(privateKey)
-    window.publicKey.setText(publicKey)
+    window.privateKey.setText(privateKeyPEM)
+    window.publicKey.setText(publicKeyPEM)
 
 
   @QtCore.Slot(str)
