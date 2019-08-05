@@ -21,6 +21,7 @@ class GuiMenu:
 
     window.guiSignal.sendOnClicked.connect(self.ReceiveSignatureDocument)
     window.guiSignal.sendOnClicked.connect(self.GetSenderPublicKey)
+    window.guiSignal.signedDocumentChanged.connect(self.ShowMessageSignature)
 
 
   @QtCore.Slot(str)
@@ -105,6 +106,24 @@ class GuiMenu:
     senderPublicKeyPEM = self.rsa.GetKeyInPEM(senderPublicKey)
 
     window.senderPublic.setText(senderPublicKeyPEM)
+
+  
+  @QtCore.Slot(str)
+  def ShowMessageSignature(self, signedDoc):
+    # trim the message out from the signature document
+    message = self.rsa.GetMessageFromSignedDoc(signedDoc)
+
+    if message != False:
+      window.signedDocument.setStyleSheet('background-color: white; ')
+      window.receiverMessage.setText(message)
+    else:
+      window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
+      window.signedDocument.setFocus()
+      window.receiverMessage.setText("")
+      window.receiveSignature.setText("")
+      window.generatedHash.setText("")
+      window.retrievedHash.setText("")
+      window.Alert("Incorrect Signature Document Format")
 
 
 if __name__ == "__main__":

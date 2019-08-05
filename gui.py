@@ -4,7 +4,9 @@ from PySide2 import QtCore, QtWidgets, QtGui
 class GuiSignal(QtCore.QObject):
   emailReady = QtCore.Signal(str)
   messageOnKeyPress = QtCore.Signal(str)
+
   sendOnClicked = QtCore.Signal()
+  signedDocumentChanged = QtCore.Signal(str)
 
 
 class GuiDigitalSignature(QtWidgets.QWidget):
@@ -203,6 +205,16 @@ class GuiDigitalSignature(QtWidgets.QWidget):
 
 
   def SetReceiverLayout(self):
+    def EmitDocumentChangeSignal(sender):
+      if sender.toPlainText().strip() == "":
+        self.receiverMessage.setText("")
+        self.receiveSignature.setText("")
+        self.generatedHash.setText("")
+        self.retrievedHash.setText("")
+      else:
+        self.guiSignal.signedDocumentChanged.emit(sender.toPlainText())
+
+
     # main layout for receiver's content area
     layout = QtWidgets.QVBoxLayout()
     # set title for the receiver's content area
@@ -213,6 +225,8 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     signedEdit = QtWidgets.QTextEdit()
     signedEdit.setPlaceholderText("Retrieved Signed Document")
     signedEdit.setToolTip("Retrieved Signed Document")
+    signedEdit.textChanged.connect(lambda: EmitDocumentChangeSignal(signedEdit)) # signedEdit onkeypress
+
     layout.addWidget(signedEdit)
     # export signedEdit field
     self.signedDocument = signedEdit
@@ -233,8 +247,12 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     # Message and Signature edit field
     messageEdit = QtWidgets.QTextEdit()
     messageEdit.setReadOnly(True)
+    # export message field
+    self.receiverMessage = messageEdit
     signatureEdit = QtWidgets.QTextEdit()
     signatureEdit.setReadOnly(True)
+    # export signature field
+    self.receiveSignature = signatureEdit
     # wrapper layout for message and signature
     messageSignatureLayout = QtWidgets.QHBoxLayout()
     # message layout
@@ -257,8 +275,12 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     # Generated Hash and Retrieved Hash edit field
     generateEdit = QtWidgets.QTextEdit()
     generateEdit.setReadOnly(True)
+    # export generated hash edit field
+    self.generatedHash = generateEdit
     retrieveEdit = QtWidgets.QTextEdit()
     retrieveEdit.setReadOnly(True)
+    # export retrieved hash edit field
+    self.retrievedHash = retrieveEdit
     # wrapper layout for both hashes
     hashLayout = QtWidgets.QHBoxLayout()
     # generated hash's layout

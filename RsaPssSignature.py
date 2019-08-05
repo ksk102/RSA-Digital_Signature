@@ -3,6 +3,7 @@ from Crypto.Signature import pss
 from Crypto.Hash import SHA256, SHA384, SHA512, SHA1, MD5
 from Crypto import Random
 from base64 import b64encode, b64decode
+import re
 
 class RsaPssSignature:
   # Set the hashing algorithm
@@ -119,3 +120,19 @@ class RsaPssSignature:
     signedDocument += "-----END RSA PSS SIGNATURE-----"
 
     return signedDocument
+
+  def GetMessageFromSignedDoc(self, signedDoc):
+    message = signedDoc
+
+    regexStart = '^(-----BEGIN RSA PSS MESSAGE-----)(\s)(Hash: )(' + self.GetHashAlgo() + ')(\s\s)'
+    regexEnd = '(-----BEGIN RSA PSS SIGNATURE-----)(\s)(.*)(\s)(-----END RSA PSS SIGNATURE-----)$'
+
+    if re.search(regexStart, message) and re.search(regexEnd, message):
+      message = re.sub(regexStart, "", message)
+      message = re.sub(regexEnd, "", message)
+      message = message.strip()
+
+      return message
+
+    else:
+      return False
