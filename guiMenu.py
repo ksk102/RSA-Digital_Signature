@@ -152,7 +152,6 @@ class GuiMenu:
       window.receiverMessage.setText("")
       window.receiveSignature.setText("")
       window.generatedHash.setText("")
-      window.retrievedHash.setText("")
       window.indicator.setText("")
       window.indicator.setStyleSheet('background-color: white; ')
       window.Alert("Incorrect Signature Document Format")
@@ -200,7 +199,10 @@ class GuiMenu:
     receiveSignature = window.receiveSignature.toPlainText()
     signatureByte = self.rsaReceiver.GetSignatureFromString(receiveSignature)
 
-    signatureVerified = self.rsaReceiver.VerifySignature(signature = signatureByte, key = self.senderPublicKey)
+    if signatureByte:
+      signatureVerified = self.rsaReceiver.VerifySignature(signature = signatureByte, key = self.senderPublicKey)
+    else:
+      return
 
     if signatureVerified:
       window.indicator.setStyleSheet('background-color: #a5d6a7; ')
