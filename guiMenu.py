@@ -50,10 +50,10 @@ class GuiMenu:
 
   @QtCore.Slot(str)
   def signedDocumentChangedCall(self, signedDoc):
-    self.ShowMessageSignature(signedDoc)
-    self.GenerateReceiveHash(signedDoc)
-    self.ShowReceiveSignature(signedDoc)
-    self.VerifySignatureReceived()
+    if self.ShowMessageSignature(signedDoc):
+      if self.GenerateReceiveHash(signedDoc):
+        if self.ShowReceiveSignature(signedDoc):
+          self.VerifySignatureReceived()
 
 
   def DisplayKeys(self, email):
@@ -146,6 +146,8 @@ class GuiMenu:
       window.signedDocument.setStyleSheet('background-color: white; ')
       window.receiverMessage.setText(message)
       self.rsaReceiver.SetMessage(message)
+
+      return True
     else:
       window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
       window.signedDocument.setFocus()
@@ -155,6 +157,8 @@ class GuiMenu:
       window.indicator.setText("")
       window.indicator.setStyleSheet('background-color: white; ')
       window.Alert("Incorrect Signature Document Format")
+
+      return False
 
 
   def GenerateReceiveHash(self, signedDoc):
@@ -170,12 +174,16 @@ class GuiMenu:
       # Set the plaintext hash on the edit field
       hashedMessage = self.rsaReceiver.GetHashedMessage()
       window.generatedHash.setText(hashedMessage)
+
+      return True
     else:
       window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
       window.generatedHash.setText("")
       window.indicator.setText("")
       window.indicator.setStyleSheet('background-color: white; ')
       window.Alert("Supported Hashing Function: \nSHA256, SHA384, SHA512, SHA1, MD5")
+
+      return False
 
   
   @QtCore.Slot(str)
@@ -185,6 +193,8 @@ class GuiMenu:
     if signature:
       window.signedDocument.setStyleSheet('background-color: white; ')
       window.receiveSignature.setText(signature)
+
+      return True
     else:
       window.signedDocument.setStyleSheet('background-color: #ffcdd2; ')
       window.signedDocument.setFocus()
@@ -193,23 +203,33 @@ class GuiMenu:
       window.indicator.setStyleSheet('background-color: white; ')
       window.Alert("Incorrect Signature Document Format")
 
+      return False
+
 
   @QtCore.Slot()
   def VerifySignatureReceived(self):
     receiveSignature = window.receiveSignature.toPlainText()
-    signatureByte = self.rsaReceiver.GetSignatureFromString(receiveSignature)
+
+    try:
+      signatureByte = self.rsaReceiver.GetSignatureFromString(receiveSignature)
+    except __import__('binascii').Error as err:
+      signatureByte = False
 
     if signatureByte:
       signatureVerified = self.rsaReceiver.VerifySignature(signature = signatureByte, key = self.senderPublicKey)
     else:
-      return
+      signatureVerified = False
 
     if signatureVerified:
       window.indicator.setStyleSheet('background-color: #a5d6a7; ')
       window.indicator.setText("Signature Verified")
+
+      return True
     else:
       window.indicator.setStyleSheet('background-color: #ffcdd2; ')
       window.indicator.setText("Invalid Signature")
+
+      return False
 
 
 if __name__ == "__main__":
