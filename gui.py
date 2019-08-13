@@ -1,4 +1,5 @@
 from PySide2 import QtCore, QtWidgets, QtGui
+import resources_rc
 
 # Signal and Slot function
 class GuiSignal(QtCore.QObject):
@@ -41,7 +42,7 @@ class GuiDigitalSignature(QtWidgets.QWidget):
     # Icons made by Icongeek26 "https://www.flaticon.com/authors/icongeek26"
     # from "https://www.flaticon.com/" 
     # is licensed by Creative Commons BY 3.0
-    self.setWindowIcon(QtGui.QIcon('images/icon.ico'))
+    self.setWindowIcon(QtGui.QIcon(':/images/icon.ico'))
 
     # Set Window Size
     windowSize = QtCore.QSize(800, 600) 
